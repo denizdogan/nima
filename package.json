@@ -1,0 +1,20 @@
+{
+  "name": "discord-kanal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.3.0",
+    "dotenv-safe": "^4.0.4",
+    "mathjs": "^3.20.1",
+    "money": "^0.2.0",
+    "node-fetch": "^1.7.3",
+    "parse-int": "^1.0.2",
+    "query-string": "^5.0.1"
+  }
+}
