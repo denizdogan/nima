@@ -1,3 +1,4 @@
+require('@babel/polyfill')
 require('dotenv-safe').load()
 
 const debug = require('debug')('nima')
