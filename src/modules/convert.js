@@ -23,9 +23,7 @@ async function convertFiat(amount, base, target) {
 async function convertCrypto(amount, base, target) {
   try {
     const qs = queryString.stringify({ fsym: base, tsyms: target })
-    const resp = await fetch(
-      `https://min-api.cryptocompare.com/data/price?${qs}`
-    )
+    const resp = await fetch(`https://min-api.cryptocompare.com/data/price?${qs}`)
 
     const data = await resp.json()
     if (data['Response'] === 'Error') {
@@ -60,8 +58,7 @@ module.exports = async function(msg) {
     const base = parts[1].toLocaleUpperCase()
     const target = parts[2].toLocaleUpperCase()
     const result =
-      (await convertFiat(amount, base, target)) ||
-      (await convertCrypto(amount, base, target))
+      (await convertFiat(amount, base, target)) || (await convertCrypto(amount, base, target))
     if (!result) {
       msg.reply('No idea, m8')
     } else {
