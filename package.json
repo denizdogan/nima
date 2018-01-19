@@ -1,5 +1,5 @@
 {
-  "name": "discord-kanal",
+  "name": "nima-bot",
   "version": "0.0.1",
   "description": "A little Discord bot",
   "main": "dist/index.js",
