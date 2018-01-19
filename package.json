@@ -4,8 +4,10 @@
   "description": "A little Discord bot",
   "main": "dist/index.js",
   "scripts": {
-    "build": "babel -s -d dist src",
+    "build": "cross-env npm run clean && babel -s -d dist src",
+    "clean": "rimraf dist",
     "dev": "node --trace-warnings ./src/index.js",
+    "prettier": "prettier --write ./src/**/*.js",
     "start": "node --trace-warnings ./dist/index.js"
   },
   "author": "Deniz Dogan <denizdogan@users.noreply.github.com>",
@@ -25,6 +27,8 @@
     "@babel/core": "^7.0.0-beta.38",
     "@babel/polyfill": "^7.0.0-beta.38",
     "@babel/preset-env": "^7.0.0-beta.38",
-    "prettier": "^1.10.2"
+    "cross-env": "^5.1.3",
+    "prettier": "^1.10.2",
+    "rimraf": "^2.6.2"
   }
 }
