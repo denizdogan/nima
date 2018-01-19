@@ -5,8 +5,6 @@ const queryString = require('query-string')
 
 async function convertFiat(amount, base, target) {
   try {
-    base = base.toLocaleUpperCase()
-    target = target.toLocaleUpperCase()
     const qs = queryString.stringify({ base })
     const resp = await fetch(`https://api.fixer.io/latest?${qs}`)
     const data = await resp.json()
