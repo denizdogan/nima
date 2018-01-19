@@ -14,6 +14,7 @@
     "discord.js": "^11.3.0",
     "dotenv-safe": "^4.0.4",
     "mathjs": "^3.20.1",
+    "moment": "^2.20.1",
     "money": "^0.2.0",
     "node-fetch": "^1.7.3",
     "parse-int": "^1.0.2",
@@ -23,6 +24,7 @@
     "@babel/cli": "^7.0.0-beta.38",
     "@babel/core": "^7.0.0-beta.38",
     "@babel/polyfill": "^7.0.0-beta.38",
-    "@babel/preset-env": "^7.0.0-beta.38"
+    "@babel/preset-env": "^7.0.0-beta.38",
+    "prettier": "^1.10.2"
   }
 }
