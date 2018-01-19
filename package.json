@@ -1,19 +1,23 @@
 {
-  "name": "discord-kanal",
+  "name": "nima-bot",
   "version": "0.0.1",
   "description": "A little Discord bot",
   "main": "dist/index.js",
   "scripts": {
-    "build": "babel -d dist src",
+    "build": "cross-env npm run clean && babel -s -d dist src",
+    "clean": "rimraf dist",
     "dev": "node --trace-warnings ./src/index.js",
+    "lint": "eslint src",
+    "prettier": "prettier --write ./src/**/*.js",
     "start": "node --trace-warnings ./dist/index.js"
   },
   "author": "Deniz Dogan <denizdogan@users.noreply.github.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^11.3.0",
     "dotenv-safe": "^4.0.4",
     "mathjs": "^3.20.1",
+    "moment": "^2.20.1",
     "money": "^0.2.0",
     "node-fetch": "^1.7.3",
     "parse-int": "^1.0.2",
@@ -23,6 +27,11 @@
     "@babel/cli": "^7.0.0-beta.38",
     "@babel/core": "^7.0.0-beta.38",
     "@babel/polyfill": "^7.0.0-beta.38",
-    "@babel/preset-env": "^7.0.0-beta.38"
+    "@babel/preset-env": "^7.0.0-beta.38",
+    "babel-eslint": "^7.2.3",
+    "cross-env": "^5.1.3",
+    "eslint": "^3.19.0",
+    "prettier": "^1.10.2",
+    "rimraf": "^2.6.2"
   }
 }
