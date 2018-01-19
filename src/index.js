@@ -2,12 +2,12 @@ require('@babel/polyfill')
 require('dotenv-safe').load()
 
 const debug = require('debug')('nima')
-const parseInt = require('parse-int')
-const Discord = require('discord.js')
-const calc = require('./modules/calc')
-const convert = require('./modules/convert')
-const damp = require('./modules/damp')
-const ping = require('./modules/ping')
+import parseInt from 'parse-int'
+import Discord from 'discord.js'
+import calc from './modules/calc'
+import convert from './modules/convert'
+import damp from './modules/damp'
+import ping from './modules/ping'
 
 const client = new Discord.Client()
 const MODULES = [calc, convert, damp, ping]

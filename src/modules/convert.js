@@ -1,7 +1,7 @@
 const debug = require('debug')('nima:modules:convert')
-const fetch = require('node-fetch')
-const fx = require('money')
-const queryString = require('query-string')
+import fetch from 'node-fetch'
+import fx from 'money'
+import queryString from 'query-string'
 
 async function convertFiat(amount, base, target) {
   try {
@@ -42,7 +42,7 @@ async function convertCrypto(amount, base, target) {
   }
 }
 
-module.exports = async function(msg) {
+export default async function(msg) {
   const { content } = msg
   if (!content.startsWith('!convert ')) {
     return

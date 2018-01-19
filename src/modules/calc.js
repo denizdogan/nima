@@ -1,7 +1,7 @@
 const debug = require('debug')('nima:modules:calc')
-const math = require('mathjs')
+import math from 'mathjs'
 
-module.exports = async function(msg) {
+export default async function(msg) {
   const { content } = msg
   if (!content.startsWith('!calc ')) {
     return

@@ -1,10 +1,10 @@
 const debug = require('debug')('nima:modules:damp')
-const moment = require('moment')
+import moment from 'moment'
 
 let lastTime = null
 const MIN_TIME_DIFF = 60 // seconds
 
-module.exports = async function(msg) {
+export default async function(msg) {
   const { content } = msg
   if (content.includes('damp')) {
     // if never sent or sent more than MIN_TIME_DIFF seconds ago
