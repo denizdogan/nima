@@ -11,7 +11,7 @@
     "start": "node --trace-warnings ./dist/index.js"
   },
   "author": "Deniz Dogan <denizdogan@users.noreply.github.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^11.3.0",
     "dotenv-safe": "^4.0.4",
