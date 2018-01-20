@@ -1,9 +1,9 @@
 const debug = require('debug')('nima:modules:quote')
-const fs = require('fs-extra')
-const logger = require('../logger')
-const path = require('path')
-const parseInt = require('parse-int')
-const randomIndex = require('random-index')
+import fs from 'fs-extra'
+import logger from '../logger'
+import parseInt from 'parse-int'
+import path from 'path'
+import randomIndex from 'random-index'
 
 const commands = {
   '!qsearch': quoteSearch,
