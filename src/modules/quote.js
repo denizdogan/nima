@@ -74,6 +74,7 @@ function randQuote(msg) {
     }
   })
 }
+
 // Show a quote matching some key-phrase
 function quoteSearch(msg, key) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
