@@ -8,7 +8,7 @@
     "clean": "rimraf dist",
     "dev": "babel-node --trace-warnings ./src/index.js",
     "lint": "eslint src",
-    "prettier": "prettier --write ./src/**/*.js",
+    "lint-fix": "eslint --fix src",
     "start": "node --trace-warnings ./dist/index.js"
   },
   "author": "Deniz Dogan <denizdogan@users.noreply.github.com>",
