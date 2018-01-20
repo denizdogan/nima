@@ -4,15 +4,14 @@ module.exports = {
     es6: true,
     node: true
   },
-  extends: 'eslint:recommended',
+  extends: ['plugin:prettier/recommended'],
   parserOptions: {
     sourceType: 'module'
   },
+  plugins: ['prettier'],
   rules: {
-    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
     'no-unused-vars': ['error', { varsIgnorePattern: '^debug$' }],
-    quotes: ['error', 'single'],
-    semi: ['error', 'never']
+    'spaced-comment': ['error', 'always']
   }
 }
