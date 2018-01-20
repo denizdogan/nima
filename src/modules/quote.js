@@ -36,6 +36,7 @@ function addQuote(msg, quote) {
     })
   })
 }
+
 function showQuote(msg, quoteId) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
   quoteId = parseInt(quoteId)

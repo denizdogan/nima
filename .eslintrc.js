@@ -12,6 +12,11 @@ module.exports = {
   rules: {
     'linebreak-style': ['error', 'unix'],
     'no-unused-vars': ['error', { varsIgnorePattern: '^debug$' }],
-    'spaced-comment': ['error', 'always']
+    'spaced-comment': ['error', 'always'],
+    'padding-line-between-statements': [
+      'error',
+      { blankLine: 'always', prev: '*', next: 'function' },
+      { blankLine: 'always', prev: 'function', next: '*' }
+    ]
   }
 }
