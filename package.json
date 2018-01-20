@@ -21,7 +21,8 @@
     "money": "^0.2.0",
     "node-fetch": "^1.7.3",
     "parse-int": "^1.0.2",
-    "query-string": "^5.0.1"
+    "query-string": "^5.0.1",
+    "winston": "^3.0.0-rc1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.38",

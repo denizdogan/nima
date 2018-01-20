@@ -1,6 +1,7 @@
 const debug = require('debug')('nima:modules:convert')
 import fetch from 'node-fetch'
 import fx from 'money'
+import logger from 'logger'
 import queryString from 'query-string'
 
 async function convertFiat(amount, base, target) {
@@ -15,7 +16,7 @@ async function convertFiat(amount, base, target) {
       .to(target)
     return result
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     return undefined
   }
 }
@@ -37,7 +38,7 @@ async function convertCrypto(amount, base, target) {
       .to(target)
     return result
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     return undefined
   }
 }
@@ -65,6 +66,6 @@ export default async function(msg) {
       msg.reply(`${amount} ${base} = ${result} ${target}`)
     }
   } catch (err) {
-    console.error(err)
+    logger.error(err)
   }
 }
