@@ -91,14 +91,11 @@ async function quoteSearch(msg, key) {
 }
 
 export default async function(msg) {
-  const command = msg.content.split(' ')[0]
-  const content = msg.content
-    .split(' ')
-    .slice(1)
-    .join(' ')
+  const [command, ...tail] = msg.content.split(' ')
   const func = commands[command]
 
   if (func) {
+    const content = tail.join(' ')
     await func(msg, content)
   }
 }
