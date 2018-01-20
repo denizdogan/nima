@@ -9,7 +9,13 @@ async function convertFiat(amount, base, target) {
   try {
     const qs = queryString.stringify({ base })
     const resp = await fetch(`https://api.fixer.io/latest?${qs}`)
+
     const data = await resp.json()
+    const { error } = data
+    if (error) {
+      throw new Error(error)
+    }
+
     fx.base = base
     fx.rates = data.rates
     const result = fx(amount)
@@ -27,8 +33,9 @@ async function convertCrypto(amount, base, target) {
     const resp = await fetch(`https://min-api.cryptocompare.com/data/price?${qs}`)
 
     const data = await resp.json()
-    if (data['Response'] === 'Error') {
-      return undefined
+    const { Response, Error: error } = data
+    if (Response === 'Error' && error) {
+      throw new Error(error)
     }
 
     fx.base = base
