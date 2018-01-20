@@ -11,7 +11,7 @@ const commands = {
 }
 
 async function addQuote(msg, quote) {
-  const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
+  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
     // Create new array of quotes if none exists
@@ -25,7 +25,7 @@ async function addQuote(msg, quote) {
 }
 
 async function showQuote(msg, quoteId) {
-  const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
+  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
   quoteId = parseInt(quoteId)
 
   if (quoteId === undefined) {
@@ -50,7 +50,7 @@ async function showQuote(msg, quoteId) {
 
 // Show a random quote
 async function randQuote(msg) {
-  const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
+  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
     if (data === undefined) {
@@ -66,7 +66,7 @@ async function randQuote(msg) {
 
 // Show a quote matching some key-phrase
 async function quoteSearch(msg, key) {
-  const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
+  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
     if (data === undefined) {
