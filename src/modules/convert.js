@@ -49,23 +49,30 @@ export default async function(msg) {
   }
 
   try {
-    const parts = content.split(' ').slice(1)
-    if (parts.length !== 3) {
+    // get the arguments
+    const args = content.split(' ').slice(1)
+    if (args.length !== 3) {
       msg.reply('Please use the format: !convert 42 SEK USD')
       return
     }
-    const amount = parseInt(parts[0])
-    const base = parts[1].toLocaleUpperCase()
-    const target = parts[2].toLocaleUpperCase()
+
+    // parse the arguments
+    const amount = parseInt(args[0])
+    const base = args[1].toLocaleUpperCase()
+    const target = args[2].toLocaleUpperCase()
+
+    // try to fetch fiat and crypto simultaneously
     const result = await Promise.any([
       convertFiat(amount, base, target),
       convertCrypto(amount, base, target)
     ])
+
     if (!result) {
       msg.reply('No idea, m8')
-    } else {
-      msg.reply(`${amount} ${base} = ${result} ${target}`)
+      return
     }
+
+    msg.reply(`${amount} ${base} = ${result} ${target}`)
   } catch (err) {
     logger.error(err)
   }
