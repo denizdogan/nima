@@ -1,5 +1,5 @@
 const debug = require('debug')('nima:modules:quote')
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 const parseInt = require('parse-int')
 
@@ -13,15 +13,27 @@ const commands = {
 async function addQuote(msg, quote) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
-  fs.readFile(file, (err, data) => {
-    // Create new array of quotes if none exists
-    const quotes = data === undefined ? [] : JSON.parse(data)
-    quotes.push(quote)
-    // Write json to file
-    fs.writeFile(file, JSON.stringify(quotes), function(err) {
-      if (err) throw err
-    })
-  })
+  // try to read the file, default to []
+  let quotes
+  try {
+    quotes = await fs.readJson(file)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      quotes = []
+    } else {
+      throw err
+    }
+  }
+
+  // add the quote to the array
+  quotes.push(quote)
+
+  // Write json to file
+  try {
+    await fs.outputJson(file, quotes)
+  } catch (err) {
+    throw err
+  }
 }
 
 async function showQuote(msg, quoteId) {

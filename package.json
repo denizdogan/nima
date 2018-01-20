@@ -18,6 +18,7 @@
   "dependencies": {
     "discord.js": "^11.3.0",
     "dotenv-safe": "^4.0.4",
+    "fs-extra": "^5.0.0",
     "mathjs": "^3.20.1",
     "moment": "^2.20.1",
     "money": "^0.2.0",
