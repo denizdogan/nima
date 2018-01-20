@@ -1,15 +1,15 @@
-require('dotenv-safe').load()
-
 const debug = require('debug')('nima:modules:quote')
 const fs = require('fs')
 const path = require('path')
 const parseInt = require('parse-int')
+
 const commands = {
   '!qsearch': quoteSearch,
   '!addquote': addQuote,
   '!randquote': randQuote,
   '!quote': showQuote
 }
+
 module.exports = async function(msg) {
   const command = msg.content.split(' ')[0]
   const content = msg.content
@@ -45,6 +45,7 @@ function showQuote(msg, quoteId) {
     msg.reply('Please use the format: !quote quote-id')
     return
   }
+
   fs.readFile(file, (err, data) => {
     if (data === undefined) {
       msg.reply('No quotes found. Sorry!')
