@@ -79,6 +79,7 @@ function quoteSearch(msg) {
   fs.readFile(file, (err, data) => {
     const key = content.replace('!qsearch ', '')
     if (data === undefined) {
+      console.log('asd')
       msg.reply('No quotes found.')
     } else {
       const quotes = JSON.parse(data)
@@ -89,8 +90,8 @@ function quoteSearch(msg) {
           matches.push(index)
         }
       })
-      // Reply with the first matching quote
-      if (!matches[0]) {
+      //Reply with the first matching quote
+      if (!matches.length) {
         msg.reply('No quotes found.')
       } else {
         msg.reply(`Quote ${matches[0]}\n${quotes[matches[0]]}`)
