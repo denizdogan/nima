@@ -80,7 +80,6 @@ function quoteSearch(msg, key) {
 
   fs.readFile(file, (err, data) => {
     if (data === undefined) {
-      console.log('asd')
       msg.reply('No quotes found.')
     } else {
       const quotes = JSON.parse(data)
