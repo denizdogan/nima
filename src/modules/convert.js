@@ -1,7 +1,7 @@
 const debug = require('debug')('nima:modules:convert')
 import fetch from 'node-fetch'
 import fx from 'money'
-import logger from 'logger'
+import logger from '../logger'
 import queryString from 'query-string'
 
 async function convertFiat(amount, base, target) {
