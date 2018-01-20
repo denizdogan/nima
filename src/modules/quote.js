@@ -10,7 +10,7 @@ const commands = {
   '!quote': showQuote
 }
 
-function addQuote(msg, quote) {
+async function addQuote(msg, quote) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
@@ -24,7 +24,7 @@ function addQuote(msg, quote) {
   })
 }
 
-function showQuote(msg, quoteId) {
+async function showQuote(msg, quoteId) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
   quoteId = parseInt(quoteId)
 
@@ -49,7 +49,7 @@ function showQuote(msg, quoteId) {
 }
 
 // Show a random quote
-function randQuote(msg) {
+async function randQuote(msg) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
@@ -65,7 +65,7 @@ function randQuote(msg) {
 }
 
 // Show a quote matching some key-phrase
-function quoteSearch(msg, key) {
+async function quoteSearch(msg, key) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
 
   fs.readFile(file, (err, data) => {
@@ -99,6 +99,6 @@ export default async function(msg) {
   const func = commands[command]
 
   if (func) {
-    func(msg, content)
+    await func(msg, content)
   }
 }
