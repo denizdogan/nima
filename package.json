@@ -25,6 +25,7 @@
     "node-fetch": "^1.7.3",
     "parse-int": "^1.0.2",
     "query-string": "^5.0.1",
+    "random-index": "^1.0.4",
     "winston": "^3.0.0-rc1"
   },
   "devDependencies": {

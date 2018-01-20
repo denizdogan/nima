@@ -2,6 +2,7 @@ const debug = require('debug')('nima:modules:quote')
 const fs = require('fs-extra')
 const path = require('path')
 const parseInt = require('parse-int')
+const randomIndex = require('random-index')
 
 const commands = {
   '!qsearch': quoteSearch,
@@ -88,29 +89,32 @@ async function randQuote(msg) {
 }
 
 // Show a quote matching some key-phrase
-async function quoteSearch(msg, key) {
+async function quoteSearch(msg, query) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
-  fs.readFile(file, (err, data) => {
-    if (data === undefined) {
-      msg.reply('No quotes found.')
-    } else {
-      const quotes = JSON.parse(data)
-      // Finding all matches (not necessary but might be useful in the future)
-      const matches = []
-      quotes.forEach((quote, index) => {
-        if (quote.includes(key)) {
-          matches.push(index)
-        }
-      })
-      // Reply with the first matching quote
-      if (!matches.length) {
-        msg.reply('No quotes found.')
-      } else {
-        msg.reply(`Quote ${matches[0]}\n${quotes[matches[0]]}`)
-      }
+  // try to read quotes
+  let quotes
+  try {
+    quotes = await fs.readJson(file)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      msg.reply('No quotes found. Sorry!')
+      return
     }
-  })
+    throw err
+  }
+
+  // filter the matching quotes
+  const matches = quotes.filter(quote => quote.includes(query))
+  if (!matches.length) {
+    msg.reply('No matching quotes found.')
+    return
+  }
+
+  // pick a random quote from the matches
+  const idx = randomIndex({ min: 0, max: matches.length - 1 })
+  const quote = matches[idx]
+  msg.reply(`Quote ${idx}\n${quote}`)
 }
 
 export default async function(msg) {
