@@ -10,19 +10,6 @@ const commands = {
   '!quote': showQuote
 }
 
-module.exports = async function(msg) {
-  const command = msg.content.split(' ')[0]
-  const content = msg.content
-    .split(' ')
-    .slice(1)
-    .join(' ')
-  const func = commands[command]
-
-  if (func) {
-    func(msg, content)
-  }
-}
-
 function addQuote(msg, quote) {
   const file = path.resolve(process.env.QUOTES_PATH, `${msg.guild.id}.json`)
 
@@ -101,4 +88,17 @@ function quoteSearch(msg, key) {
       }
     }
   })
+}
+
+export default async function(msg) {
+  const command = msg.content.split(' ')[0]
+  const content = msg.content
+    .split(' ')
+    .slice(1)
+    .join(' ')
+  const func = commands[command]
+
+  if (func) {
+    func(msg, content)
+  }
 }
