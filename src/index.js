@@ -27,7 +27,11 @@ client.on('message', async msg => {
   }
 
   for (const module of MODULES) {
-    module(msg)
+    try {
+      await module(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
   }
 })
 
