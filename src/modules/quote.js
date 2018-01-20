@@ -11,7 +11,10 @@ const commands = {
 }
 module.exports = async function(msg) {
   const command = msg.content.split(' ')[0]
-  commands[command](msg)
+  const func = commands[command]
+  if (func) {
+    func(msg)
+  }
 }
 
 function addQuote(msg) {
