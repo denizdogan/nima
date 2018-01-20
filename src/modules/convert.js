@@ -2,6 +2,7 @@ const debug = require('debug')('nima:modules:convert')
 import fetch from 'node-fetch'
 import fx from 'money'
 import logger from '../logger'
+import Promise from 'bluebird'
 import queryString from 'query-string'
 
 async function convertFiat(amount, base, target) {
@@ -16,8 +17,7 @@ async function convertFiat(amount, base, target) {
       .to(target)
     return result
   } catch (err) {
-    logger.error(err)
-    return undefined
+    throw err
   }
 }
 
@@ -38,8 +38,7 @@ async function convertCrypto(amount, base, target) {
       .to(target)
     return result
   } catch (err) {
-    logger.error(err)
-    return undefined
+    throw err
   }
 }
 
@@ -58,8 +57,10 @@ export default async function(msg) {
     const amount = parseInt(parts[0])
     const base = parts[1].toLocaleUpperCase()
     const target = parts[2].toLocaleUpperCase()
-    const result =
-      (await convertFiat(amount, base, target)) || (await convertCrypto(amount, base, target))
+    const result = await Promise.any([
+      convertFiat(amount, base, target),
+      convertCrypto(amount, base, target)
+    ])
     if (!result) {
       msg.reply('No idea, m8')
     } else {
