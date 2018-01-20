@@ -1,5 +1,6 @@
 const debug = require('debug')('nima:modules:quote')
 const fs = require('fs-extra')
+const logger = require('../logger')
 const path = require('path')
 const parseInt = require('parse-int')
 const randomIndex = require('random-index')
@@ -11,20 +12,23 @@ const commands = {
   '!quote': showQuote
 }
 
+async function readQuotes(file) {
+  // try to read the file, default to []
+  try {
+    return await fs.readJson(file)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return []
+    }
+    throw err
+  }
+}
+
 async function addQuote(msg, quote) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
-  // try to read the file, default to []
-  let quotes
-  try {
-    quotes = await fs.readJson(file)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      quotes = []
-    } else {
-      throw err
-    }
-  }
+  // read the quotes
+  const quotes = await readQuotes(file)
 
   // add the quote to the array
   quotes.push(quote)
@@ -48,15 +52,10 @@ async function showQuote(msg, quoteId) {
   }
 
   // try to read quotes
-  let quotes
-  try {
-    quotes = await fs.readJson(file)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      msg.reply('No quotes found. Sorry!')
-      return
-    }
-    throw err
+  const quotes = await readQuotes(file)
+  if (!quotes.length) {
+    msg.reply('No quotes found. Sorry!')
+    return
   }
 
   // Reply with quote
@@ -72,15 +71,10 @@ async function randQuote(msg) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
   // try to read quotes
-  let quotes
-  try {
-    quotes = await fs.readJson(file)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      msg.reply('No quotes found. Sorry!')
-      return
-    }
-    throw err
+  const quotes = await readQuotes(file)
+  if (!quotes.length) {
+    msg.reply('No quotes found. Sorry!')
+    return
   }
 
   // Reply with a random quote
@@ -93,15 +87,10 @@ async function quoteSearch(msg, query) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
   // try to read quotes
-  let quotes
-  try {
-    quotes = await fs.readJson(file)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      msg.reply('No quotes found. Sorry!')
-      return
-    }
-    throw err
+  const quotes = await readQuotes(file)
+  if (!quotes.length) {
+    msg.reply('No quotes found. Sorry!')
+    return
   }
 
   // filter the matching quotes
@@ -123,6 +112,11 @@ export default async function(msg) {
 
   if (func) {
     const content = tail.join(' ')
-    await func(msg, content)
+    try {
+      await func(msg, content)
+    } catch (err) {
+      logger.error(err)
+      msg.reply('An error occurred.')
+    }
   }
 }
