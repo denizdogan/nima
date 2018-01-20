@@ -70,16 +70,21 @@ async function showQuote(msg, quoteId) {
 async function randQuote(msg) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
 
-  fs.readFile(file, (err, data) => {
-    if (data === undefined) {
+  // try to read quotes
+  let quotes
+  try {
+    quotes = await fs.readJson(file)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
       msg.reply('No quotes found. Sorry!')
-    } else {
-      const quotes = JSON.parse(data)
-      // Reply with a random quote
-      const n = Math.floor(Math.random() * quotes.length)
-      msg.reply(`Quote ${n}\n${quotes[n]}`)
+      return
     }
-  })
+    throw err
+  }
+
+  // Reply with a random quote
+  const n = Math.floor(Math.random() * quotes.length)
+  msg.reply(`Quote ${n}\n${quotes[n]}`)
 }
 
 // Show a quote matching some key-phrase
