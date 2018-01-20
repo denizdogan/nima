@@ -24,12 +24,8 @@ function addQuote(msg) {
   fs.readFile(file, (err, data) => {
     if (content.startsWith('!addquote ')) {
       const quote = content.replace('!addquote ', '')
-      if (data === undefined) {
-        //Create new array of quotes if none exists
-        quotes = []
-      } else {
-        quotes = JSON.parse(data)
-      }
+      //Create new array of quotes if none exists
+      const quotes = data === undefined ? [] : JSON.parse(data)
       quotes.push(quote)
       //Write json to file
       fs.writeFile(file, JSON.stringify(quotes), function(err) {
@@ -50,7 +46,7 @@ function showQuote(msg) {
     if (data === undefined) {
       msg.reply('No quotes found. Sorry!')
     } else {
-      quotes = JSON.parse(data)
+      const quotes = JSON.parse(data)
       //Reply with quote
       if (quoteId >= quotes.length) {
         msg.reply(`There is no quote ${quoteId}`)
@@ -63,13 +59,13 @@ function showQuote(msg) {
 
 //Show a random quote
 function randQuote(msg) {
-  const { content, guild } = msg
+  const { guild } = msg
   const file = `${process.env.QUOTES_PATH}/${guild.id}.json`
   fs.readFile(file, (err, data) => {
     if (data === undefined) {
       msg.reply('No quotes found. Sorry!')
     } else {
-      quotes = JSON.parse(data)
+      const quotes = JSON.parse(data)
       //Reply with a random quote
       const n = Math.floor(Math.random() * quotes.length)
       msg.reply(`Quote ${n}\n${quotes[n]}`)
@@ -85,7 +81,7 @@ function quoteSearch(msg) {
     if (data === undefined) {
       msg.reply('No quotes found.')
     } else {
-      quotes = JSON.parse(data)
+      const quotes = JSON.parse(data)
       //Finding all matches (not necessary but might be useful in the future)
       let matches = []
       quotes.forEach((quote, index) => {
