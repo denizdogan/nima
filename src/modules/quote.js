@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import logger from '../logger'
 import parseInt from 'parse-int'
 import path from 'path'
-import randomIndex from 'random-index'
+import pickRandom from 'pick-random'
 
 const commands = {
   '!qsearch': quoteSearch,
@@ -94,15 +94,16 @@ async function quoteSearch(msg, query) {
   }
 
   // filter the matching quotes
-  const matches = quotes.filter(quote => quote.includes(query))
+  const matches = quotes
+    .map((quote, idx) => ({ quote, idx }))
+    .filter(({ quote }) => quote.includes(query))
   if (!matches.length) {
     msg.reply('No matching quotes found.')
     return
   }
 
   // pick a random quote from the matches
-  const idx = randomIndex({ min: 0, max: matches.length - 1 })
-  const quote = matches[idx]
+  const { idx, quote } = pickRandom(matches)
   msg.reply(`Quote ${idx}\n${quote}`)
 }
 
