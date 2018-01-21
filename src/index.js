@@ -10,9 +10,10 @@ import convert from './modules/convert'
 import damp from './modules/damp'
 import ping from './modules/ping'
 import quote from './modules/quote'
+import youtube from './modules/youtube'
 
 const client = new Discord.Client()
-const MODULES = [calc, convert, damp, ping, quote]
+const MODULES = [calc, convert, damp, ping, quote, youtube]
 
 client.on('ready', () => {
   logger.info(`Logged in as ${client.user.tag}!`)
