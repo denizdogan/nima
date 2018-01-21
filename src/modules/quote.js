@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import logger from '../logger'
 import parseInt from 'parse-int'
 import path from 'path'
-import pickRandom from 'pick-random'
+import randomItem from 'random-item'
 
 const commands = {
   '!qsearch': quoteSearch,
@@ -50,6 +50,7 @@ async function showQuote(msg, quoteId) {
     msg.reply('Please use the format: !quote quote-id')
     return
   }
+  const idx = quoteId - 1
 
   // try to read quotes
   const quotes = await readQuotes(file)
@@ -59,10 +60,11 @@ async function showQuote(msg, quoteId) {
   }
 
   // Reply with quote
-  if (quoteId >= quotes.length) {
-    msg.reply(`There is no quote ${quoteId}`)
+  const quote = quotes[idx]
+  if (quote) {
+    msg.reply(`Quote ${quoteId}\n${quotes[idx]}`)
   } else {
-    msg.reply(`Quote ${quoteId}\n${quotes[quoteId]}`)
+    msg.reply(`There is no quote ${quoteId}`)
   }
 }
 
@@ -79,7 +81,7 @@ async function randQuote(msg) {
 
   // Reply with a random quote
   const n = Math.floor(Math.random() * quotes.length)
-  msg.reply(`Quote ${n}\n${quotes[n]}`)
+  msg.reply(`Quote ${n + 1}\n${quotes[n]}`)
 }
 
 // Show a quote matching some key-phrase
@@ -103,8 +105,8 @@ async function quoteSearch(msg, query) {
   }
 
   // pick a random quote from the matches
-  const { idx, quote } = pickRandom(matches)
-  msg.reply(`Quote ${idx}\n${quote}`)
+  const { idx, quote } = randomItem(matches)
+  msg.reply(`Quote ${idx + 1}\n${quote}`)
 }
 
 export default async function(msg) {
