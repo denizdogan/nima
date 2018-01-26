@@ -42,6 +42,12 @@ async function addQuote(msg, quote) {
 }
 
 async function showQuote(msg, quoteId) {
+  // if no quoteId given, get a random quote
+  if (quoteId === '') {
+    await randQuote(msg)
+    return
+  }
+
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
   const quotes = await readQuotes(file)
   const quoteCount = quotes.length
