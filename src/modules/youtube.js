@@ -14,7 +14,7 @@ async function onMessage(msg) {
   const query = tail.join(' ')
 
   try {
-    const result = await promiseSearch(query, { key: process.env.YOUTUBE_API_KEY })
+    const result = await promiseSearch(query, { key: process.env.GOOGLE_API_KEY })
     if (!result.length) {
       msg.reply('no matches :(')
       return
