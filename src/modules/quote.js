@@ -43,29 +43,31 @@ async function addQuote(msg, quote) {
 
 async function showQuote(msg, quoteId) {
   const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
-
-  // parse the ID as an integer
-  quoteId = parseInt(quoteId)
-  if (quoteId === undefined) {
-    msg.reply('Please use the format: !quote quote-id')
-    return
-  }
-  const idx = quoteId - 1
+  const quotes = await readQuotes(file)
+  const quoteCount = quotes.length
 
   // try to read quotes
-  const quotes = await readQuotes(file)
-  if (!quotes.length) {
+  if (!quoteCount) {
     msg.reply('No quotes found. Sorry!')
     return
   }
 
+  // parse the ID as an integer
+  quoteId = parseInt(quoteId)
+  if (quoteId === undefined) {
+    msg.reply(`Please use the format: !quote <id> (${quoteCount} quotes in storage)`)
+    return
+  }
+
   // Reply with quote
+  const idx = quoteId - 1
   const quote = quotes[idx]
   if (quote) {
-    msg.reply(`Quote ${quoteId}\n${quotes[idx]}`)
-  } else {
-    msg.reply(`There is no quote ${quoteId}`)
+    msg.reply(`Quote ${quoteId}\n${quote}`)
+    return
   }
+
+  msg.reply(`There is no quote ${quoteId}`)
 }
 
 // Show a random quote
@@ -118,6 +120,7 @@ async function onMessage(msg) {
     try {
       await func(msg, content)
     } catch (err) {
+      console.error(err)
       logger.error(err)
       msg.reply('An error occurred.')
     }
