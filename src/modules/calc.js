@@ -1,7 +1,7 @@
 const debug = require('debug')('nima:modules:calc')
 import math from 'mathjs'
 
-export default async function(msg) {
+async function onMessage(msg) {
   const { content } = msg
   if (!content.startsWith('!calc ')) {
     return
@@ -17,4 +17,19 @@ export default async function(msg) {
   } catch (err) {
     msg.reply(err.message)
   }
+}
+
+export default function(client) {
+  client.on('message', async msg => {
+    // ignore own messages
+    if (msg.author.id === client.user.id) {
+      return
+    }
+
+    try {
+      await onMessage(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
+  })
 }

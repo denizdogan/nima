@@ -109,7 +109,7 @@ async function quoteSearch(msg, query) {
   msg.reply(`Quote ${idx + 1}\n${quote}`)
 }
 
-export default async function(msg) {
+async function onMessage(msg) {
   const [command, ...tail] = msg.content.split(' ')
   const func = commands[command]
 
@@ -122,4 +122,19 @@ export default async function(msg) {
       msg.reply('An error occurred.')
     }
   }
+}
+
+export default function(client) {
+  client.on('message', async msg => {
+    // ignore own messages
+    if (msg.author.id === client.user.id) {
+      return
+    }
+
+    try {
+      await onMessage(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
+  })
 }

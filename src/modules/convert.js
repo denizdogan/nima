@@ -59,7 +59,7 @@ function replyUsage(msg) {
   `)
 }
 
-export default async function(msg) {
+async function onMessage(msg) {
   const [head, ...args] = msg.content.split(' ')
   if (head !== '!convert') {
     return
@@ -102,4 +102,19 @@ export default async function(msg) {
     logger.error(err)
     replyUsage(msg)
   }
+}
+
+export default function(client) {
+  client.on('message', async msg => {
+    // ignore own messages
+    if (msg.author.id === client.user.id) {
+      return
+    }
+
+    try {
+      await onMessage(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
+  })
 }

@@ -4,7 +4,7 @@ import moment from 'moment'
 let lastTime = null
 const MIN_TIME_DIFF = 60 // seconds
 
-export default async function(msg) {
+async function onMessage(msg) {
   const { content } = msg
   if (content.includes('damp')) {
     // if never sent or sent more than MIN_TIME_DIFF seconds ago
@@ -13,4 +13,19 @@ export default async function(msg) {
       lastTime = moment.now()
     }
   }
+}
+
+export default function(client) {
+  client.on('message', async msg => {
+    // ignore own messages
+    if (msg.author.id === client.user.id) {
+      return
+    }
+
+    try {
+      await onMessage(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
+  })
 }

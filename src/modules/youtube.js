@@ -5,7 +5,7 @@ import youtubeSearch from 'youtube-search'
 
 const promiseSearch = Promise.promisify(youtubeSearch)
 
-export default async function(msg) {
+async function onMessage(msg) {
   const [command, ...tail] = msg.content.split(' ')
   if (!['!youtube', '!yt'].includes(command)) {
     return
@@ -25,4 +25,19 @@ export default async function(msg) {
     logger.error(err)
     msg.reply(err.message)
   }
+}
+
+export default function(client) {
+  client.on('message', async msg => {
+    // ignore own messages
+    if (msg.author.id === client.user.id) {
+      return
+    }
+
+    try {
+      await onMessage(msg)
+    } catch (err) {
+      logger.error('An error occurred in a module', err)
+    }
+  })
 }
