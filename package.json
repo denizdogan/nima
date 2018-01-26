@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "common-tags": "^1.7.2",
     "discord.js": "^11.3.0",
     "dotenv-safe": "^4.0.4",
     "fs-extra": "^5.0.0",

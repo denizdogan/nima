@@ -4,6 +4,7 @@ import fx from 'money'
 import logger from '../logger'
 import Promise from 'bluebird'
 import queryString from 'query-string'
+import { stripIndents } from 'common-tags'
 
 async function convertFiat(amount, base, target) {
   try {
@@ -49,24 +50,41 @@ async function convertCrypto(amount, base, target) {
   }
 }
 
+function replyUsage(msg) {
+  msg.reply(stripIndents`
+    Please use the format: !convert [amount] from to
+    Examples:
+    !convert 42 SEK USD
+    !convert XRP BTC
+  `)
+}
+
 export default async function(msg) {
-  const { content } = msg
-  if (!content.startsWith('!convert ')) {
+  const [head, ...args] = msg.content.split(' ')
+  if (head !== '!convert') {
     return
   }
 
   try {
     // get the arguments
-    const args = content.split(' ').slice(1)
-    if (args.length !== 3) {
-      msg.reply('Please use the format: !convert 42 SEK USD')
+    if (args.length !== 3 && args.length !== 2) {
+      replyUsage(msg)
       return
     }
 
     // parse the arguments
-    const amount = parseInt(args[0])
-    const base = args[1].toLocaleUpperCase()
-    const target = args[2].toLocaleUpperCase()
+    let amount
+    let base
+    let target
+    if (args.length === 3) {
+      amount = parseInt(args[0])
+      base = args[1].toLocaleUpperCase()
+      target = args[2].toLocaleUpperCase()
+    } else if (args.length === 2) {
+      amount = 1
+      base = args[0].toLocaleUpperCase()
+      target = args[1].toLocaleUpperCase()
+    }
 
     // try to fetch fiat and crypto simultaneously
     const result = await Promise.any([
@@ -82,5 +100,6 @@ export default async function(msg) {
     msg.reply(`${amount} ${base} = ${result} ${target}`)
   } catch (err) {
     logger.error(err)
+    replyUsage(msg)
   }
 }
