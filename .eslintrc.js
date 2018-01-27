@@ -11,7 +11,7 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'linebreak-style': ['error', 'unix'],
-    'no-unused-vars': ['error', { varsIgnorePattern: '^debug$' }],
+    'no-unused-vars': ['error', { varsIgnorePattern: '^debug$|^_$' }],
     'spaced-comment': ['error', 'always'],
     'padding-line-between-statements': [
       'error',

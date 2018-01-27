@@ -1,5 +1,5 @@
 require('@babel/polyfill')
-require('dotenv-safe').load()
+import _ from './env'
 
 const debug = require('debug')('nima')
 

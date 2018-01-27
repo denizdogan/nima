@@ -1,120 +1,192 @@
 const debug = require('debug')('nima:modules:quote')
 import fs from 'fs-extra'
 import logger from '../logger'
-import parseInt from 'parse-int'
-import path from 'path'
 import randomItem from 'random-item'
+import { stripIndents } from 'common-tags'
+import { naturalDay } from 'humanize'
+
+/**
+ * Quote container providing convenience methods for easily interacting with the database.
+ * @class
+ */
+class QuoteContainer {
+  /**
+   * Mapping between guild ID as a string and its list of quotes.
+   *
+   * {
+   *   "405121502231321801": [
+   *     {
+   *       "user": "foobar#1234",
+   *       "date": "2012-04-23T18:25:43.511Z",
+   *       "text": "loool"
+   *     }
+   *   ],
+   *   ...
+   * }
+   *
+   * @private
+   */
+  quotes = {}
+
+  /**
+   * Load the database from disk.
+   * @throws Will throw an error if an error occurred
+   */
+  async load() {
+    try {
+      this.quotes = await fs.readJson(process.env.QUOTES_FILE_PATH)
+    } catch (err) {
+      // ENOENT is expected, it means the file doesn't exist (yet)
+      if (err.code !== 'ENOENT') {
+        throw err
+      }
+    }
+  }
+
+  /**
+   * Write the database to disk.
+   * @throws Will throw an error if an error occurred
+   * @private
+   */
+  async save() {
+    try {
+      await fs.writeJSON(process.env.QUOTES_FILE_PATH, this.quotes)
+    } catch (err) {
+      throw err
+    }
+  }
+
+  /**
+   * Add a quote to the database.
+   * @param {string} guild Guild ID
+   * @param {string} user Username
+   * @param {string} text The quote
+   * @throws Will throw an error if an error occurred
+   * @public
+   */
+  async add(guild, user, text) {
+    if (!this.quotes.hasOwnProperty(guild)) {
+      this.quotes[guild] = []
+    }
+    try {
+      this.quotes[guild].push({
+        user,
+        date: new Date().toJSON(),
+        text
+      })
+      this.save() // TODO: await?
+    } catch (err) {
+      throw err
+    }
+  }
+
+  /**
+   * Return a randomly selected quote which includes the given search string.
+   * If not quote includes the search string, return null.
+   * @param {string} guild Guild ID
+   * @param {string} text Search string
+   * @returns {?object} A matching quote and its index or null
+   * @public
+   */
+  search(guild, text) {
+    const quotes = this.quotes[guild] || []
+    const matching = quotes
+      .map((quote, idx) => ({ quote, idx }))
+      .filter(({ quote }) => quote.text.includes(text))
+    if (!matching.length) {
+      return null
+    }
+    return randomItem(matching)
+  }
+
+  /**
+   * Return a quote given its index in the database.
+   * If no such quote exists, return null.
+   * @param {string} guild Guild ID
+   * @param {number} idx Index of the quote
+   * @returns {?object} The quote or null
+   */
+  get(guild, idx) {
+    const quotes = this.quotes[guild] || []
+    return quotes[idx] || null
+  }
+
+  /**
+   * Get the number of quotes stored for the given guild.
+   * @param {string} guild Guild ID
+   * @returns {number} The number of quotes stored for the given guild
+   */
+  size(guild) {
+    const quotes = this.quotes[guild] || []
+    return quotes.length
+  }
+}
+
+const quotes = new QuoteContainer()
+quotes.load().then(
+  () => {
+    logger.debug('Successfully loaded quotes')
+  },
+  reason => {
+    logger.error(reason)
+  }
+)
+
+function addQuote(msg, quote) {
+  return quotes.add(msg.guild.id, msg.author.tag, quote)
+}
+
+async function showQuote(msg, quoteId) {
+  try {
+    // if no argument given, show a random quote
+    if (quoteId === '') {
+      await randQuote(msg)
+      return
+    }
+
+    // the index of the quote is (quoteId - 1)
+    const match = await quotes.get(msg.guild.id, quoteId - 1)
+    if (!match) {
+      msg.reply(`There is no quote ${quoteId}`)
+      return
+    }
+
+    const date = naturalDay(new Date(match.date).getTime() / 1000)
+    msg.reply(stripIndents`
+      Quote ${quoteId} (added by ${match.user} @ ${date})
+      ${match.text}
+    `)
+  } catch (err) {
+    throw err
+  }
+}
+
+// Show a random quote
+function randQuote(msg) {
+  return quoteSearch(msg, '')
+}
+
+// Show a quote matching some key-phrase
+async function quoteSearch(msg, query) {
+  const match = await quotes.search(msg.guild.id, query)
+  if (!match) {
+    msg.reply('No matching quotes found.')
+    return
+  }
+
+  const { idx, quote } = match
+  const date = naturalDay(new Date(quote.date).getTime() / 1000)
+  msg.reply(stripIndents`
+    Quote ${idx + 1} (added by ${quote.user} @ ${date})
+    ${quote.text}
+  `)
+}
 
 const commands = {
   '!qsearch': quoteSearch,
   '!addquote': addQuote,
   '!randquote': randQuote,
   '!quote': showQuote
-}
-
-async function readQuotes(file) {
-  // try to read the file, default to []
-  try {
-    return await fs.readJson(file)
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return []
-    }
-    throw err
-  }
-}
-
-async function addQuote(msg, quote) {
-  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
-
-  // read the quotes
-  const quotes = await readQuotes(file)
-
-  // add the quote to the array
-  quotes.push(quote)
-
-  // Write json to file
-  try {
-    await fs.outputJson(file, quotes)
-  } catch (err) {
-    throw err
-  }
-}
-
-async function showQuote(msg, quoteId) {
-  // if no quoteId given, get a random quote
-  if (quoteId === '') {
-    await randQuote(msg)
-    return
-  }
-
-  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
-  const quotes = await readQuotes(file)
-  const quoteCount = quotes.length
-
-  // try to read quotes
-  if (!quoteCount) {
-    msg.reply('No quotes found. Sorry!')
-    return
-  }
-
-  // parse the ID as an integer
-  quoteId = parseInt(quoteId)
-  if (quoteId === undefined) {
-    msg.reply(`Please use the format: !quote <id> (${quoteCount} quotes in storage)`)
-    return
-  }
-
-  // Reply with quote
-  const idx = quoteId - 1
-  const quote = quotes[idx]
-  if (quote) {
-    msg.reply(`Quote ${quoteId}\n${quote}`)
-    return
-  }
-
-  msg.reply(`There is no quote ${quoteId}`)
-}
-
-// Show a random quote
-async function randQuote(msg) {
-  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
-
-  // try to read quotes
-  const quotes = await readQuotes(file)
-  if (!quotes.length) {
-    msg.reply('No quotes found. Sorry!')
-    return
-  }
-
-  // Reply with a random quote
-  const n = Math.floor(Math.random() * quotes.length)
-  msg.reply(`Quote ${n + 1}\n${quotes[n]}`)
-}
-
-// Show a quote matching some key-phrase
-async function quoteSearch(msg, query) {
-  const file = path.resolve(process.env.QUOTES_DIRECTORY, `${msg.guild.id}.json`)
-
-  // try to read quotes
-  const quotes = await readQuotes(file)
-  if (!quotes.length) {
-    msg.reply('No quotes found. Sorry!')
-    return
-  }
-
-  // filter the matching quotes
-  const matches = quotes
-    .map((quote, idx) => ({ quote, idx }))
-    .filter(({ quote }) => quote.includes(query))
-  if (!matches.length) {
-    msg.reply('No matching quotes found.')
-    return
-  }
-
-  // pick a random quote from the matches
-  const { idx, quote } = randomItem(matches)
-  msg.reply(`Quote ${idx + 1}\n${quote}`)
 }
 
 async function onMessage(msg) {
@@ -143,7 +215,7 @@ export default function(client) {
     try {
       await onMessage(msg)
     } catch (err) {
-      logger.error('An error occurred in a module', err)
+      throw err
     }
   })
 }
