@@ -2,6 +2,7 @@ const debug = require('debug')('nima:modules:quote')
 import fs from 'fs-extra'
 import logger from '../logger'
 import randomItem from 'random-item'
+import parseInt from 'parse-int'
 import { stripIndents } from 'common-tags'
 import { naturalDay } from 'humanize'
 
@@ -132,11 +133,11 @@ quotes.load().then(
   }
 )
 
-function addQuote(msg, quote) {
+function add(msg, quote) {
   return quotes.add(msg.guild.id, msg.author.tag, quote)
 }
 
-async function showQuote(msg, quoteId) {
+async function show(msg, quoteId) {
   try {
     // if no argument given, show a random quote
     if (quoteId === '') {
@@ -161,13 +162,8 @@ async function showQuote(msg, quoteId) {
   }
 }
 
-// Show a random quote
-function randQuote(msg) {
-  return quoteSearch(msg, '')
-}
-
 // Show a quote matching some key-phrase
-async function quoteSearch(msg, query) {
+async function search(msg, query) {
   const match = await quotes.search(msg.guild.id, query)
   if (!match) {
     msg.reply('No matching quotes found.')
@@ -182,27 +178,34 @@ async function quoteSearch(msg, query) {
   `)
 }
 
-const commands = {
-  '!qsearch': quoteSearch,
-  '!addquote': addQuote,
-  '!randquote': randQuote,
-  '!quote': showQuote
-}
-
-async function onMessage(msg) {
+function onMessage(msg) {
   const [command, ...tail] = msg.content.split(' ')
-  const func = commands[command]
 
-  if (func) {
+  // check if it's the !addquote command
+  if (command === '!addquote') {
     const content = tail.join(' ')
-    try {
-      await func(msg, content)
-    } catch (err) {
-      console.error(err)
-      logger.error(err)
-      msg.reply('An error occurred.')
-    }
+    return add(msg, content)
   }
+
+  // if it's not !quote, don't do anything
+  if (command !== '!quote') {
+    return
+  }
+
+  // if no argument was given, show a random quote
+  if (!tail.length) {
+    return search(msg, '')
+  }
+
+  // if an integer argument was given, that's a quote ID
+  const integer = parseInt(tail[0])
+  if (integer !== undefined) {
+    return show(msg, integer)
+  }
+
+  // otherwise, it's a search
+  const content = tail.join(' ')
+  return search(msg, content)
 }
 
 export default function(client) {
@@ -213,7 +216,7 @@ export default function(client) {
     }
 
     try {
-      await onMessage(msg)
+      await Promise.resolve(onMessage(msg))
     } catch (err) {
       throw err
     }
