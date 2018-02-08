@@ -66,16 +66,47 @@ class QuoteContainer {
    * @public
    */
   async add(guild, user, text) {
-    if (!this.quotes.hasOwnProperty(guild)) {
-      this.quotes[guild] = []
-    }
     try {
+      if (!this.quotes.hasOwnProperty(guild)) {
+        this.quotes[guild] = []
+      }
       this.quotes[guild].push({
         user,
         date: new Date().toJSON(),
         text
       })
       this.save() // TODO: await?
+    } catch (err) {
+      throw err
+    }
+  }
+
+  /**
+   * Remove a quote from the database.
+   * @param {string} guild Guild ID
+   * @param {string} user Username
+   * @param {number} id The quote ID
+   * @throws Will throw an error if an error occurred
+   * @public
+   */
+  async remove(guild, user, id) {
+    try {
+      // check if the quote exists in the first place
+      const idx = id - 1
+      const quotes = this.quotes[guild]
+      if (idx < 0 || quotes === undefined || idx > quotes.length) {
+        return
+      }
+
+      // check that the user added the quote in the first place
+      const quote = this.quotes[guild][idx]
+      if (quote.user !== user) {
+        return
+      }
+
+      // delete the quote and save
+      quotes.splice(idx, 1)
+      this.save()
     } catch (err) {
       throw err
     }
@@ -137,6 +168,10 @@ function add(msg, quote) {
   return quotes.add(msg.guild.id, msg.author.tag, quote)
 }
 
+function remove(msg, quoteId) {
+  return quotes.remove(msg.guild.id, msg.author.tag, quoteId)
+}
+
 async function show(msg, quoteId) {
   try {
     // if no argument given, show a random quote
@@ -185,6 +220,12 @@ function onMessage(msg) {
   if (command === '!addquote') {
     const content = tail.join(' ')
     return add(msg, content)
+  }
+
+  // check if it's the !delquote command
+  if (command === '!delquote') {
+    const integer = parseInt(tail[0])
+    return remove(msg, integer)
   }
 
   // if it's not !quote, don't do anything
