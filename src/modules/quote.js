@@ -124,7 +124,7 @@ class QuoteContainer {
     const quotes = this.quotes[guild] || []
     const matching = quotes
       .map((quote, idx) => ({ quote, idx }))
-      .filter(({ quote }) => quote.text.includes(text))
+      .filter(({ quote }) => quote.text.toLocaleLowerCase().includes(text.toLocaleLowerCase()))
     if (!matching.length) {
       return null
     }
